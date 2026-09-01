@@ -6,6 +6,15 @@ This project develops an end-to-end machine learning solution for **credit risk 
 
 The project follows a structured credit modelling workflow, covering data exploration, feature preparation, train/test splitting, preprocessing, model development, performance evaluation, model comparison, threshold optimization, feature explainability, hyperparameter tuning, and final model assessment.
 
+## Dataset
+
+The project uses a credit risk dataset containing borrower and loan-related characteristics, with a binary target variable representing loan default status.
+
+The dataset includes numerical, ordinal, and categorical features describing different aspects of the borrower's financial and credit profile.
+
+The data was explored and prepared before being used for machine learning model development.
+
+
 ## Business Objective
 
 The model is designed to support **data-driven credit risk assessment** by identifying borrowers with a higher probability of default. Such predictive models can support credit decision-making, risk segmentation, and more consistent assessment of borrower creditworthiness.
@@ -15,7 +24,7 @@ The model is designed to support **data-driven credit risk assessment** by ident
 * Data Understanding & Exploratory Data Analysis
 * Target Variable Analysis
 * Train/Test Split
-* Feature Preparation and Classification
+* Feature Preparation 
 * Data Preprocessing using Scaling and Encoding
 * Machine Learning Model Development
 * Model Evaluation and Comparison
