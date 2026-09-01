@@ -1,12 +1,12 @@
-# Credit Risk - Loan Default Prediction - Machine Learning Model
+# Credit Risk Modeling & Loan Default Prediction using Machine Learning
 
 ## Project Overview
 
-This project develops an end-to-end **Machine Learning solution for Credit Risk Assessment and Loan Default Prediction** using the German Credit dataset.
+This project develops an end-to-end **Machine Learning solution for Credit Risk Assessment and Loan Default Risk Classification** using the **German Credit dataset**.
 
-The objective is to predict whether a customer represents **Good or Bad credit risk** based on borrower and credit-related characteristics.
+The objective is to classify customers into **Good or Bad Credit Risk** based on borrower and credit-related characteristics.
 
-The project combines **credit risk concepts with machine learning techniques**, covering the complete modelling lifecycle from data understanding and preprocessing to model development, evaluation, optimization, explainability, and final risk interpretation.
+The project combines **credit risk concepts with machine learning techniques**, covering the complete modelling lifecycle from data understanding and quality assessment to preprocessing, model development, evaluation, threshold optimization, explainability, hyperparameter tuning, and final risk interpretation.
 
 ---
 
@@ -14,15 +14,16 @@ The project combines **credit risk concepts with machine learning techniques**, 
 
 The objective is to develop a predictive credit risk model that can help identify customers with a higher likelihood of being classified as **Bad Credit Risk**.
 
-From a credit risk perspective, particular attention is given to the model's ability to identify Bad customers, since failing to detect a high-risk borrower can result in increased credit losses.
+From a credit risk perspective, particular attention is given to the model's ability to identify Bad customers, since failing to detect a high-risk borrower can contribute to increased credit losses.
 
 The project demonstrates how machine learning can support:
 
 * Data-driven credit risk assessment
-* Risk segmentation
+* Risk classification and segmentation
 * Credit decision-making
 * Identification of higher-risk borrowers
-* More consistent evaluation of borrower creditworthiness
+* Consistent evaluation of borrower creditworthiness
+* Risk-based classification threshold selection
 
 ---
 
@@ -50,9 +51,9 @@ The dataset contains a combination of:
 
 ---
 
-## Data Understanding & Quality Checks
+## Data Understanding & Quality Assessment
 
-The dataset was examined to understand its structure and data quality.
+The dataset was examined to understand its structure, feature characteristics, and data quality before model development.
 
 The analysis included:
 
@@ -62,20 +63,22 @@ The analysis included:
 * Missing value analysis
 * Duplicate record analysis
 * Target variable distribution
-* Number of unique values per feature
+* Feature cardinality and number of unique values
 
 ### Data Quality Results
 
-* **Rows:** 1,000
-* **Input Features:** 20
-* **Missing Values:** 0
-* **Duplicate Records:** 0
+| Data Quality Check | Result |
+| ------------------ | -----: |
+| Rows               |  1,000 |
+| Input Features     |     20 |
+| Missing Values     |      0 |
+| Duplicate Records  |      0 |
 
 ---
 
 ## Feature Classification
 
-The input variables were classified according to their characteristics and business meaning to ensure that appropriate preprocessing techniques were applied.
+The input variables were classified according to their data characteristics and business meaning to ensure that appropriate preprocessing techniques were applied.
 
 ### Numerical Features
 
@@ -109,7 +112,7 @@ The input variables were classified according to their characteristics and busin
 
 ## Machine Learning Workflow
 
-The project follows an end-to-end credit modelling workflow:
+The project follows an end-to-end **credit risk modelling workflow**:
 
 1. Data Loading
 2. Data Understanding
@@ -140,7 +143,7 @@ The dataset was divided into:
 * **80% Training Set:** 800 observations
 * **20% Test Set:** 200 observations
 
-A **stratified split** was used to preserve the Good/Bad credit risk distribution across the training and test datasets.
+A **stratified train/test split** was used to preserve the Good/Bad credit risk distribution across both datasets.
 
 ```python
 train_test_split(
@@ -152,6 +155,8 @@ train_test_split(
 )
 ```
 
+The test set was kept separate and used for final model evaluation on **unseen data**.
+
 ---
 
 ## Data Preprocessing
@@ -160,39 +165,41 @@ Different preprocessing techniques were applied according to feature type.
 
 | Feature Type | Preprocessing Technique |
 | ------------ | ----------------------- |
-| Numerical    | StandardScaler          |
-| Ordinal      | OrdinalEncoder          |
-| Categorical  | OneHotEncoder           |
+| Numerical    | `StandardScaler`        |
+| Ordinal      | `OrdinalEncoder`        |
+| Categorical  | `OneHotEncoder`         |
 
-A **ColumnTransformer** was used to combine the preprocessing steps into a unified transformation pipeline.
+A **ColumnTransformer** was used to combine the preprocessing steps into a unified transformation process.
 
-This approach ensures that each feature type is processed appropriately before being used by the machine learning models.
+The preprocessing was fitted on the training data and then applied to the test data to maintain a proper machine learning workflow and avoid information leakage.
+
+After preprocessing and encoding, the model contained **42 transformed features**.
 
 ---
 
 ## Machine Learning Models
 
-Three classification models were developed and evaluated:
+Three classification models were developed and evaluated.
 
 ### 1. Logistic Regression
 
-Logistic Regression was used as the baseline model due to its interpretability and suitability for binary credit risk classification.
+**Logistic Regression** was selected as the baseline model due to its interpretability and suitability for binary credit risk classification.
+
+It also provides coefficients that can be examined to understand the directional contribution of model features.
 
 ### 2. Decision Tree
 
-A Decision Tree was developed as a non-linear alternative to evaluate whether tree-based decision rules could improve predictive performance.
+A **Decision Tree Classifier** was developed as a non-linear modelling alternative to evaluate whether tree-based decision rules could improve predictive performance.
 
 ### 3. Random Forest
 
-A Random Forest model was developed as an ensemble-based alternative combining multiple decision trees.
+A **Random Forest Classifier** was developed as an ensemble-based alternative combining multiple decision trees.
 
 ---
 
 ## Model Evaluation
 
-Model performance was evaluated using several classification metrics, with particular attention to the **Bad Credit Risk class**.
-
-The evaluation included:
+Model performance was evaluated using multiple classification metrics:
 
 * Accuracy
 * Precision
@@ -201,23 +208,27 @@ The evaluation included:
 * Confusion Matrix
 * ROC-AUC
 
+Particular attention was given to the **Bad Credit Risk class**.
+
 ### Why Bad Recall Matters
 
-In credit risk modelling, identifying Bad customers is particularly important.
+In credit risk modelling, identifying potentially Bad customers is particularly important.
 
-Therefore, **Bad Recall** was specifically monitored to assess how effectively the model identifies customers who belong to the Bad Credit Risk class.
+**Bad Recall** measures the proportion of actual Bad customers that the model successfully identifies.
+
+A higher Bad Recall can help reduce the number of high-risk borrowers incorrectly classified as Good, although improving recall may introduce a trade-off with precision and overall classification performance.
 
 ---
 
 ## Model Comparison
 
-The initial models produced the following results:
+The initial models produced the following results on the test set using the default classification threshold:
 
-| Model               | Accuracy | Bad Precision | Bad Recall |    Bad F1 |   ROC-AUC |
-| ------------------- | -------: | ------------: | ---------: | --------: | --------: |
-| Logistic Regression |    78.0% |         64.8% |  **58.3%** | **61.4%** | **83.4%** |
-| Decision Tree       |    68.0% |         46.8% |      48.3% |     47.5% |     62.4% |
-| Random Forest       |    75.5% |         63.4% |      43.3% |     51.5% |     81.7% |
+| Model               |  Accuracy | Bad Precision | Bad Recall |    Bad F1 |   ROC-AUC |
+| ------------------- | --------: | ------------: | ---------: | --------: | --------: |
+| Logistic Regression | **78.0%** |     **64.8%** |  **58.3%** | **61.4%** | **83.4%** |
+| Decision Tree       |     68.0% |         46.8% |      48.3% |     47.5% |     62.4% |
+| Random Forest       |     75.5% |         63.4% |      43.3% |     51.5% |     81.7% |
 
 ### Model Selection
 
@@ -236,51 +247,68 @@ Based on these results, Logistic Regression was selected for further optimizatio
 
 ## Classification Threshold Optimization
 
-The default classification threshold was further analyzed to improve the model's ability to identify **Bad Credit Risk** customers.
+Model performance was further analyzed by evaluating different classification probability thresholds rather than relying only on the default threshold.
 
-Multiple thresholds were evaluated based on:
+Thresholds ranging from **0.10 to 0.99** were evaluated using:
 
 * Accuracy
 * Bad Precision
 * Bad Recall
 * Bad F1-score
 
-The threshold that provided the best Bad F1-score was:
+The threshold producing the best **Bad F1-score** was selected:
 
-**Optimal Threshold = 0.71**
+### Optimal Threshold = 0.71
 
 At this threshold:
 
-* **Bad Recall = 80.0%**
-* **Bad Precision = 56.5%**
-* **Bad F1-score = 66.2%**
+| Metric        |    Result |
+| ------------- | --------: |
+| Bad Recall    | **80.0%** |
+| Bad Precision | **56.5%** |
+| Bad F1-score  | **66.2%** |
 
-This demonstrates the trade-off between overall predictive performance and the ability to identify higher-risk customers.
+The threshold optimization demonstrates the trade-off between identifying more Bad customers and maintaining precision.
+
+In a real credit risk environment, the appropriate threshold would ultimately depend on the business objective and the relative cost of different types of classification errors.
 
 ---
 
 ## Feature Explainability
 
-Feature explainability was performed using the coefficients of the Logistic Regression model.
+Feature explainability was performed using the **Logistic Regression coefficients**.
 
-The preprocessing process generated **42 model features** after encoding categorical variables.
+The preprocessing process generated **42 model-ready features** after scaling and encoding.
 
-Model coefficients were examined to understand the direction and relative magnitude of each feature's contribution to the model prediction.
+The coefficients were extracted and analyzed to understand:
 
-This provides additional interpretability and helps connect the machine learning output with credit risk characteristics.
+* The direction of the relationship between transformed features and the model prediction
+* The relative magnitude of model coefficients
+* Which transformed variables have stronger influence within the fitted Logistic Regression model
+
+This provides an interpretable view of the model and helps connect machine learning outputs with credit risk characteristics.
+
+> Note: coefficient interpretation should be considered in the context of the applied scaling, ordinal encoding, and one-hot encoding transformations.
 
 ---
 
 ## Hyperparameter Tuning
 
-**GridSearchCV** was used to optimize the Logistic Regression model.
+After selecting Logistic Regression, **GridSearchCV** was used to optimize the model's hyperparameters.
 
-The following hyperparameters were evaluated:
+The following parameters were evaluated:
 
 * `C`
 * `solver`
 
-A **5-fold cross-validation** strategy was used with **ROC-AUC** as the optimization metric.
+A **5-fold cross-validation** strategy was applied using **ROC-AUC** as the optimization metric.
+
+### Parameter Grid
+
+```python
+C = [0.01, 0.1, 1, 10, 100]
+solver = ['liblinear', 'lbfgs']
+```
 
 ### Best Parameters
 
@@ -293,11 +321,13 @@ solver = lbfgs
 
 **77.9%**
 
+The cross-validated score represents performance during model selection on the training data, while the final ROC-AUC below represents performance on the unseen test set.
+
 ---
 
 ## Final Model Evaluation
 
-The tuned Logistic Regression model was evaluated on the unseen test set.
+The tuned Logistic Regression model was evaluated on the **unseen test set**.
 
 ### Final Model Performance
 
@@ -309,51 +339,56 @@ The tuned Logistic Regression model was evaluated on the unseen test set.
 | Bad F1-score  | **62.4%** |
 | ROC-AUC       | **83.6%** |
 
-The final tuned model achieved a **ROC-AUC of 83.6%**, demonstrating good discriminatory ability between Good and Bad credit risk classes.
+The tuned Logistic Regression model achieved a **ROC-AUC of 83.6%**, demonstrating good discriminatory ability between Good and Bad Credit Risk classes on the unseen test set.
 
 ---
 
 ## Final Risk Threshold
 
-The optimized threshold of **0.71** was applied to the tuned Logistic Regression model to prioritize the detection of Bad Credit Risk customers.
+The optimized threshold of **0.71** was applied to the tuned Logistic Regression model to place greater emphasis on identifying Bad Credit Risk customers.
 
 ### Performance at the Optimized Threshold
 
-| Metric        |    Result |
-| ------------- | --------: |
-| Threshold     |  **0.71** |
-| Bad Recall    | **80.0%** |
-| Bad Precision | **56.5%** |
-| Bad F1-score  | **66.2%** |
+| Metric                   |    Result |
+| ------------------------ | --------: |
+| Classification Threshold |  **0.71** |
+| Bad Recall               | **80.0%** |
+| Bad Precision            | **56.5%** |
+| Bad F1-score             | **66.2%** |
 
-The threshold adjustment increases the model's ability to identify Bad customers, while introducing the expected trade-off with precision.
+Compared with the tuned model at its default threshold, the optimized threshold substantially increases **Bad Recall from 56.7% to 80.0%**.
 
-This reflects a practical credit risk modelling consideration: **the optimal decision threshold depends on the relative business cost of false positives and false negatives.**
+This comes with the expected precision trade-off and demonstrates an important credit risk modelling principle:
+
+> **The optimal classification threshold should be aligned with the business cost of false positives and false negatives.**
 
 ---
 
 ## Credit Risk Interpretation
 
-The final model converts predicted probabilities into:
+The model predicts the probability of a customer belonging to the **Good Credit Risk** class and converts the probability into a final classification.
+
+The final classification is:
 
 * **0 = Bad Credit Risk**
 * **1 = Good Credit Risk**
 
-Using the optimized threshold of **0.71**, the model becomes more focused on identifying potentially high-risk borrowers.
+Using the optimized threshold of **0.71**, the model is adjusted to become more conservative in identifying potentially higher-risk borrowers.
 
-This demonstrates the importance of going beyond a default 0.50 classification threshold when applying machine learning to credit risk problems.
+This demonstrates why model development in credit risk should not rely solely on overall accuracy. **Class-specific performance, probability thresholds, and business risk considerations** are also important when translating model predictions into credit decisions.
 
 ---
 
 ## Key Skills Demonstrated
 
-### Credit Risk
+### Credit Risk Analytics
 
 * Credit Risk Assessment
-* Loan Default Prediction
-* Risk Classification
-* Risk-Based Decision Making
-* Borrower Risk Segmentation
+* Loan Default Risk Classification
+* Good/Bad Risk Classification
+* Risk Segmentation
+* Credit Decision Support
+* Risk-Based Threshold Optimization
 * Model Interpretation
 
 ### Machine Learning
@@ -363,13 +398,38 @@ This demonstrates the importance of going beyond a default 0.50 classification t
 * Decision Tree
 * Random Forest
 * Train/Test Split
+* Stratified Sampling
 * Cross-Validation
 * Hyperparameter Tuning
+* GridSearchCV
 * Threshold Optimization
 * Model Comparison
 * Model Evaluation
 
-### Data & Python
+### Model Evaluation & Risk Metrics
+
+* Accuracy
+* Precision
+* Recall
+* F1-Score
+* ROC-AUC
+* Confusion Matrix
+* Class-specific Performance Analysis
+* Precision/Recall Trade-offs
+
+### Data Preparation
+
+* Data Quality Assessment
+* Missing Value Analysis
+* Duplicate Detection
+* Feature Classification
+* Numerical Feature Scaling
+* Ordinal Encoding
+* One-Hot Encoding
+* ColumnTransformer
+* Feature Preparation
+
+### Python & Analytics Tools
 
 * Python
 * Pandas
@@ -378,30 +438,76 @@ This demonstrates the importance of going beyond a default 0.50 classification t
 * Matplotlib
 * Jupyter Notebook
 * Google Colab
-* Data Preprocessing
-* Feature Engineering / Feature Preparation
-* Feature Explainability
 
 ---
 
 ## Tools & Technologies
 
-* **Python**
-* **Pandas**
-* **NumPy**
-* **Scikit-learn**
-* **Matplotlib**
-* **Jupyter Notebook**
-* **Google Colab**
+| Category                    | Tools                          |
+| --------------------------- | ------------------------------ |
+| Programming                 | Python                         |
+| Data Analysis               | Pandas, NumPy                  |
+| Machine Learning            | Scikit-learn                   |
+| Data Visualization          | Matplotlib                     |
+| Development Environment     | Google Colab, Jupyter Notebook |
+| Version Control & Portfolio | GitHub                         |
+
+### Key Scikit-learn Components
+
+* `train_test_split`
+* `ColumnTransformer`
+* `StandardScaler`
+* `OrdinalEncoder`
+* `OneHotEncoder`
+* `LogisticRegression`
+* `DecisionTreeClassifier`
+* `RandomForestClassifier`
+* `GridSearchCV`
+* Classification metrics
+* ROC-AUC evaluation
+
+---
+
+## Key Project Takeaways
+
+The project demonstrates that **model performance should be evaluated from both a predictive and credit risk perspective**.
+
+Key findings include:
+
+1. **Logistic Regression** achieved the strongest initial performance among the tested models.
+2. The tuned Logistic Regression model achieved **79.5% Accuracy** and **83.6% ROC-AUC** on the unseen test set.
+3. **Bad Recall** was explicitly considered because correctly identifying higher-risk customers is an important credit risk objective.
+4. Threshold optimization at **0.71** increased Bad Recall from **56.7% to 80.0%**.
+5. The improvement in Bad Recall was accompanied by a precision trade-off, illustrating the importance of balancing model performance with business risk objectives.
+6. Logistic Regression coefficients provided an interpretable view of feature contributions.
 
 ---
 
 ## Project Outcome
 
-This project demonstrates the application of machine learning to a practical **credit risk modelling problem**, combining predictive modelling with risk-focused evaluation and interpretation.
+This project demonstrates the application of machine learning to a practical **credit risk modelling problem**, combining predictive modelling with risk-focused evaluation, threshold optimization, and model explainability.
 
-The analysis showed that **Logistic Regression** provided the strongest initial performance among the tested models. After hyperparameter tuning, the final model achieved a **ROC-AUC of 83.6%** on the unseen test set.
+The final workflow covers the complete modelling process:
 
-Further threshold optimization increased **Bad Credit Risk recall to 80.0%**, demonstrating how classification thresholds can be adjusted to align model predictions with credit risk priorities.
+**Data Understanding → Data Quality → Feature Preparation → Preprocessing → Model Development → Model Evaluation → Model Comparison → Threshold Optimization → Explainability → Hyperparameter Tuning → Final Evaluation → Credit Risk Interpretation**
 
-Overall, the project demonstrates an end-to-end approach to developing, evaluating, interpreting, and optimizing a machine learning model for **credit risk and loan default prediction**.
+The project highlights how machine learning can be used as a **decision-support tool within credit risk**, while recognizing that model thresholds and performance priorities should ultimately be aligned with business objectives and risk appetite.
+
+---
+
+## Repository Structure
+
+```text
+Credit-Risk-Machine-Learning-Loan-Default-Prediction/
+│
+├── Credit_Risk_Loan_Default_Prediction.ipynb
+└── README.md
+```
+
+---
+
+## Author
+
+**Merna Medhat**
+
+Credit Risk | Risk Analytics | Machine Learning | Data Analysis
